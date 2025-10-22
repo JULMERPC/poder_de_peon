@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://du88drr2p5u0k"]
+
+[ext_resource type="PackedScene" uid="uid://cayuahmj24ilh" path="res://scenes/board/Board.tscn" id="1_mlfhq"]
+
+[node name="TestBoard" type="Node2D"]
+
+[node name="Board" parent="." instance=ExtResource("1_mlfhq")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+visible = false
+position = Vector2(575, 323)

@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://djxxtplllfru"]
+
+[ext_resource type="Script" uid="uid://b7q5htn45r88s" path="res://scripts/Tile.gd" id="1_ts3a1"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_ts3a1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cy2v4"]
+size = Vector2(64, 64)
+
+[node name="Tile" type="Area2D"]
+script = ExtResource("1_ts3a1")
+
+[node name="Highlight" type="Sprite2D" parent="."]
+modulate = Color(17.061005, 18.892157, 18.892157, 1)
+self_modulate = Color(0.75686276, 0.9372549, 0.69803923, 1)
+position = Vector2(-1.5, 1.9073486e-06)
+scale = Vector2(64.99999, 66)
+texture = SubResource("PlaceholderTexture2D_ts3a1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="MoveIndicator" type="Sprite2D" parent="."]
+position = Vector2(-1.4999963, -2.7418137e-06)
+scale = Vector2(65.00001, 64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, -1)
+shape = SubResource("RectangleShape2D_cy2v4")
+debug_color = Color(0.33169702, 0.50890106, 0.93398315, 0.41960785)
