@@ -262,3 +262,12 @@ func get_piece_name() -> String:
 			type_name = "Rey"
 	
 	return "%s %s" % [type_name, color_name]
+
+
+
+# En Piece.gd
+func move_to_position(target_pos: Vector2):
+	var tween = create_tween()
+	tween.tween_property(self, "position", target_pos, 0.3)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
