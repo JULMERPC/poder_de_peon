@@ -1,5 +1,40 @@
-[gd_scene format=3 uid="uid://d2swd04snrjmh"]
+[gd_scene load_steps=2 format=3 uid="uid://d2swd04snrjmh"]
+
+[ext_resource type="Script" uid="uid://c4sietyvdmpv1" path="res://scripts/ui/PauseMenu.gd" id="1_vb6pq"]
 
 [node name="PauseMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 0
+script = ExtResource("1_vb6pq")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_left = 454.0
+offset_top = 195.0
+offset_right = 657.0
+offset_bottom = 385.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TitleLabel" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "PAUSA"
+
+[node name="ResumeButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "▶️ Continuar"
+
+[node name="RestartButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "🔄 Reiniciar"
+
+[node name="SettingsButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "⚙️ Opciones"
+
+[node name="MenuButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "🏠 Menú Principal"

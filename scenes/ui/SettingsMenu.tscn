@@ -1,5 +1,54 @@
-[gd_scene format=3 uid="uid://c37kxt78gywtl"]
+[gd_scene load_steps=2 format=3 uid="uid://c37kxt78gywtl"]
+
+[ext_resource type="Script" uid="uid://dnke626yls6wo" path="res://scripts/ui/SettingsMenu.gd" id="1_gtm51"]
 
 [node name="SettingsMenu" type="Control"]
 layout_mode = 3
 anchors_preset = 0
+script = ExtResource("1_gtm51")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Audio" type="VBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="MasterVolumeSlider" type="HSlider" parent="Panel/VBoxContainer/Audio"]
+layout_mode = 2
+
+[node name="MusicVolumeSlider" type="HSlider" parent="Panel/VBoxContainer/Audio"]
+layout_mode = 2
+
+[node name="SFXVolumeSlider" type="HSlider" parent="Panel/VBoxContainer/Audio"]
+layout_mode = 2
+
+[node name="Display" type="VBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="FullscreenCheck" type="CheckBox" parent="Panel/VBoxContainer/Display"]
+layout_mode = 2
+
+[node name="VsyncCheck" type="CheckBox" parent="Panel/VBoxContainer/Display"]
+layout_mode = 2
+
+[node name="Gameplay" type="VBoxContainer" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="DifficultyOption" type="OptionButton" parent="Panel/VBoxContainer/Gameplay"]
+layout_mode = 2
+
+[node name="ShowHintsCheck" type="CheckBox" parent="Panel/VBoxContainer/Gameplay"]
+layout_mode = 2
+
+[node name="AnimationsCheck" type="CheckBox" parent="Panel/VBoxContainer/Gameplay"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2

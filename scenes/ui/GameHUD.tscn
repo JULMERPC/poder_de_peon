@@ -1,3 +1,83 @@
-[gd_scene format=3 uid="uid://dru36k6ln8gth"]
+[gd_scene load_steps=2 format=3 uid="uid://dru36k6ln8gth"]
+
+[ext_resource type="Script" uid="uid://cxaair0bhhfht" path="res://scripts/ui/GameHUD.gd" id="1_f41ut"]
 
 [node name="GameHud" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_f41ut")
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_constants/separation = 4
+
+[node name="PauseButton" type="Button" parent="TopBar"]
+layout_mode = 2
+text = "⏸️"
+flat = true
+
+[node name="TurnLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "TURNO: BLANCAS"
+
+[node name="TimerLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "00:00"
+
+[node name="ScoreLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+text = "Puntuación: 0"
+
+[node name="MenuButton" type="Button" parent="TopBar"]
+layout_mode = 2
+text = "📋"
+
+[node name="SidePanel" type="HBoxContainer" parent="."]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -4.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="WhiteCaptures" type="HBoxContainer" parent="SidePanel"]
+layout_mode = 2
+
+[node name="BlackCaptures" type="HBoxContainer" parent="SidePanel"]
+layout_mode = 2
+
+[node name="BottomPanel" type="HBoxContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="SelectedPieceInfo" type="PanelContainer" parent="BottomPanel"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="BottomPanel/SelectedPieceInfo"]
+layout_mode = 2
+
+[node name="PieceNameLabel" type="Label" parent="BottomPanel/SelectedPieceInfo/VBox"]
+layout_mode = 2
+
+[node name="HealthBar" type="ProgressBar" parent="BottomPanel/SelectedPieceInfo/VBox"]
+layout_mode = 2
+
+[node name="PieceSprite" type="TextureRect" parent="BottomPanel/SelectedPieceInfo/VBox"]
+layout_mode = 2
+
+[node name="PowersPanel" type="HBoxContainer" parent="BottomPanel"]
+layout_mode = 2
+
+[node name="SpecialPowerButton" type="Button" parent="BottomPanel/PowersPanel"]
+layout_mode = 2
+
+[node name="CooldownLabel" type="Label" parent="BottomPanel/PowersPanel"]
+layout_mode = 2

@@ -25,8 +25,8 @@ func _ready():
 		animation_player.play("fade_in")
 	
 	# Configurar versión
-	version_label.text = "v0.1 Alpha - Godot 4.x"
-	
+	#version_label.text = "v0.1 Alpha - Godot 4.x"
+	#
 	# Efecto hover en botones
 	setup_button_hover_effects()
 
