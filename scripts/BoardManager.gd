@@ -10,6 +10,8 @@ signal checkmate_detected(winner_color: Piece.PieceColor)
 
 const BOARD_SIZE = 8
 const TILE_SIZE = Vector2(64, 64)
+const PieceFactory = preload("res://scripts/pieces/PieceFactory.gd")
+
 
 @export var board_offset: Vector2 = Vector2(100, 100)
 @export var enable_piece_movement: bool = true
@@ -30,6 +32,8 @@ var tile_scene = preload("res://scenes/board/Tile.tscn")
 
 func _ready():
 	create_board()
+	await get_tree().process_frame  # opcional pero recomendable para esperar a que el tablero se dibuje
+	setup_standard_game()
 
 func create_board():
 	clear_board()
@@ -103,6 +107,8 @@ func _on_tile_clicked(tile: Tile):
 
 func _on_tile_hovered(tile: Tile):
 	pass
+	
+	
 
 func select_piece(tile: Tile):
 	if not tile.has_piece():
@@ -261,15 +267,184 @@ func is_king_in_check(king: Piece) -> bool:
 	
 	return false
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# BoardManager.gd
 func is_checkmate(king: Piece) -> bool:
-	# TODO: Implementar detección completa de jaque mate
-	# Verificar si el rey puede moverse o si alguna pieza puede bloquear/capturar
+	if not king.is_alive:
+		return false
+	
+	# 1️⃣ Si el rey no está en jaque, no hay jaque mate
+	if not is_in_check(king.piece_color):
+		return false
+	
+	# 2️⃣ Verificar si el rey puede moverse a una casilla segura
+	var legal_moves = king.get_basic_moves(self)
+	for move in legal_moves:
+		if not is_valid_position(move):
+			continue
+		
+		var tile = get_tile(move)
+		if tile.has_piece() and tile.occupied_piece.piece_color == king.piece_color:
+			continue
+		
+		# Simular movimiento del rey
+		var original_tile = king.current_tile
+		var captured_piece = tile.occupied_piece if tile.has_piece() else null
+		
+		move_piece(king, move)
+		var still_in_check = is_in_check(king.piece_color)
+		
+		# Revertir simulación
+		move_piece(king, original_tile.grid_position)
+		if captured_piece:
+			place_piece_at(self, captured_piece, tile.grid_position)
+		
+		if not still_in_check:
+			return false  # El rey puede escapar
+	
+	# 3️⃣ Si el rey no puede escapar, ver si alguna pieza aliada puede bloquear o capturar
+	var attackers = get_attackers_of_king(king)
+	if attackers.is_empty():
+		return false
+	
+	# Solo se puede bloquear si hay un único atacante y no es un caballo
+	if attackers.size() == 1:
+		var attacker = attackers[0]
+		
+		# Obtener ruta entre atacante y rey
+		var path = get_path_between(attacker.current_tile.grid_position, king.current_tile.grid_position)
+		
+		# Probar si alguna pieza aliada puede bloquear o capturar al atacante
+		for piece in get_all_pieces_of_color(king.piece_color):
+			if piece == king or not piece.is_alive:
+				continue
+			
+			var moves = piece.get_basic_moves(self)
+			for move in moves:
+				# Puede capturar atacante directamente
+				if move == attacker.current_tile.grid_position:
+					if can_simulate_safe_move(piece, move, king.piece_color):
+						return false
+				
+				# O puede bloquear la trayectoria (si aplica)
+				if move in path:
+					if can_simulate_safe_move(piece, move, king.piece_color):
+						return false
+	
+	# 4️⃣ Si llegamos aquí, el rey no puede moverse ni ser defendido → JAQUE MATE
+	return true
+
+
+
+
+
+
+
+# Verifica si el color dado está en jaque
+func is_in_check(color: Piece.PieceColor) -> bool:
+	var king = get_king_of_color(color)
+	if not king or not king.is_alive:
+		return false
+	
+	for piece in get_all_pieces_of_color(opposite_color(color)):
+		if not piece.is_alive:
+			continue
+		var moves = piece.get_basic_moves(self)
+		if king.current_tile.grid_position in moves:
+			return true
 	return false
+
+
+# Retorna todas las piezas que atacan al rey
+func get_attackers_of_king(king: Piece) -> Array:
+	var attackers: Array = []
+	for piece in get_all_pieces_of_color(opposite_color(king.piece_color)):
+		if not piece.is_alive:
+			continue
+		var moves = piece.get_basic_moves(self)
+		if king.current_tile.grid_position in moves:
+			attackers.append(piece)
+	return attackers
+
+
+# Simula un movimiento temporalmente y verifica si sigue en jaque
+func can_simulate_safe_move(piece: Piece, target_pos: Vector2i, color: Piece.PieceColor) -> bool:
+	var original_pos = piece.current_tile.grid_position
+	var captured_piece = null
+	var target_tile = get_tile(target_pos)
+	if target_tile.has_piece():
+		captured_piece = target_tile.occupied_piece
+	
+	move_piece(piece, target_pos)
+	var still_in_check = is_in_check(color)
+	move_piece(piece, original_pos)
+	
+	if captured_piece:
+		place_piece_at(self, captured_piece, target_pos)
+	
+	return not still_in_check
+
+
+# Retorna todos los cuadros entre dos posiciones (excluyendo ambos)
+func get_path_between(start: Vector2i, end: Vector2i) -> Array:
+	var path: Array = []
+	var direction = (end - start).sign()
+	var pos = start + direction
+	while pos != end:
+		path.append(pos)
+		pos += direction
+	return path
+
+
+# Retorna el rey de un color
+func get_king_of_color(color: Piece.PieceColor) -> Piece:
+	for piece in get_all_pieces_of_color(color):
+		if piece.piece_type == Piece.PieceType.KING and piece.is_alive:
+			return piece
+	return null
+
+
+# Retorna todas las piezas de un color
+func get_all_pieces_of_color(color: Piece.PieceColor) -> Array:
+	var result: Array = []
+	for child in get_children():
+		if child is Piece and child.piece_color == color:
+			result.append(child)
+	return result
+
+
+func opposite_color(color: Piece.PieceColor) -> Piece.PieceColor:
+	return Piece.PieceColor.BLACK if color == Piece.PieceColor.WHITE else Piece.PieceColor.WHITE
+
+
+
+
+
+
+
+
+
 
 func setup_standard_game():
 	var pieces = PieceFactory.setup_standard_chess_board(self)
-	white_pieces = pieces["white"]
-	black_pieces = pieces["black"]
+	var white_pieces = []
+	var black_pieces = []
+
 	current_turn = Piece.PieceColor.WHITE
 
 func setup_survival_mode(round: int):
@@ -325,3 +500,39 @@ func print_board_state():
 			else:
 				row += "[ ] "
 		print(row)
+
+
+# Mueve una pieza de una casilla a otra (actualiza la referencia del Tile)
+func move_piece(piece: Piece, target_pos: Vector2i):
+	if not is_valid_position(target_pos):
+		push_warning("Intento de mover pieza a posición inválida: %s" % target_pos)
+		return
+	
+	var origin_tile = piece.current_tile
+	var target_tile = get_tile(target_pos)
+	
+	# Si hay una pieza enemiga, eliminarla (captura)
+	if target_tile.has_piece():
+		var captured_piece = target_tile.occupied_piece
+		if captured_piece.piece_color != piece.piece_color:
+			captured_piece.take_damage(captured_piece.current_health)
+	
+	# Actualizar referencias
+	if origin_tile:
+		origin_tile.clear_piece()
+	
+	target_tile.set_piece(piece)
+	piece.current_tile = target_tile
+	piece.position = target_tile.position
+
+
+# Coloca una pieza en una posición del tablero (para restaurar simulaciones)
+func place_piece_at(board: BoardManager, piece: Piece, grid_pos: Vector2i):
+	var tile = board.get_tile(grid_pos)
+	if not tile:
+		push_error("No se pudo colocar pieza en posición inválida: %s" % grid_pos)
+		return
+	
+	tile.set_piece(piece)
+	piece.current_tile = tile
+	piece.position = tile.position

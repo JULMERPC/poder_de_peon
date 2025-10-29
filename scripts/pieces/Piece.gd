@@ -47,22 +47,37 @@ func initialize(type: PieceType, color: PieceColor, board: BoardManager):
 	current_health = max_health
 	update_visuals()
 
+#func update_visuals():
+	#if sprite:
+		## Aquí cargarías los sprites reales
+		## Por ahora usamos colores para diferenciar
+		#match piece_color:
+			#PieceColor.WHITE:
+				#sprite.modulate = Color.WHITE
+			#PieceColor.BLACK:
+				#sprite.modulate = Color(0.3, 0.3, 0.3)
+	#
+	#if health_bar and max_health > 1:
+		#health_bar.visible = true
+		#health_bar.max_value = max_health
+		#health_bar.value = current_health
+	#elif health_bar:
+		#health_bar.visible = false
 func update_visuals():
 	if sprite:
-		# Aquí cargarías los sprites reales
-		# Por ahora usamos colores para diferenciar
+		# Escalar automáticamente al tamaño de la casilla
+		if board_manager:
+			var tile_size = board_manager.TILE_SIZE
+			var tex_size = sprite.texture.get_size()
+			var scale_factor = tile_size.x / tex_size.x
+			sprite.scale = Vector2(scale_factor, scale_factor)
+		
+		# Colorear según el color
 		match piece_color:
 			PieceColor.WHITE:
 				sprite.modulate = Color.WHITE
 			PieceColor.BLACK:
-				sprite.modulate = Color(0.3, 0.3, 0.3)
-	
-	if health_bar and max_health > 1:
-		health_bar.visible = true
-		health_bar.max_value = max_health
-		health_bar.value = current_health
-	elif health_bar:
-		health_bar.visible = false
+				sprite.modulate = Color(0.82, 0.749, 0.0, 1.0)
 
 # Método principal para calcular movimientos legales
 func get_legal_moves(board: BoardManager) -> Array[Vector2i]:

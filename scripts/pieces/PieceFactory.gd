@@ -159,17 +159,35 @@ static func setup_standard_chess_board(board: BoardManager) -> Dictionary:
 		pieces["black"].append(piece)
 	
 	return pieces
-
+#
+#static func place_piece_at(board: BoardManager, piece: Piece, grid_pos: Vector2i):
+	#var tile = board.get_tile(grid_pos)
+	#if not tile:
+		#push_error("No se pudo colocar pieza en posición inválida: %s" % grid_pos)
+		#return
+	#
+	## Colocar pieza en el tablero
+	#tile.set_piece(piece)
+	#board.add_child(piece)
+	#piece.position = tile.position
 static func place_piece_at(board: BoardManager, piece: Piece, grid_pos: Vector2i):
 	var tile = board.get_tile(grid_pos)
 	if not tile:
 		push_error("No se pudo colocar pieza en posición inválida: %s" % grid_pos)
 		return
 	
-	# Colocar pieza en el tablero
+	# Colocar la pieza en el tablero lógico
 	tile.set_piece(piece)
+	piece.current_tile = tile
+
+	# Posicionar la pieza con base en el offset y tamaño del tablero
+	piece.position = board.board_offset + Vector2(
+		grid_pos.x * board.TILE_SIZE.x,
+		grid_pos.y * board.TILE_SIZE.y
+	)
+	
+	# Agregarla al nodo del tablero
 	board.add_child(piece)
-	piece.position = tile.position
 
 # Crear configuración personalizada para modo supervivencia
 static func setup_survival_mode(board: BoardManager, round: int) -> Dictionary:
